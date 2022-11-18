@@ -1,8 +1,16 @@
-FROM node:16
+FROM node:16.3.0-alpine
+
 WORKDIR /usr/src/app
+
 COPY package.json ./
 RUN npm install --only=production
+RUN npm install typescript@4.9.3
+
 COPY ./src ./src
-CMD npm run build
+COPY ./tsconfig.json ./
+
+RUN npm run build
+COPY ./dist ./dist
+
 CMD npm start
 

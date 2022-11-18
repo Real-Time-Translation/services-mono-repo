@@ -10,7 +10,6 @@ COPY ./src ./src
 COPY ./tsconfig.json ./
 
 RUN npm run build
-COPY ./dist ./dist
 
 CMD npm start
 

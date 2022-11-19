@@ -17,7 +17,7 @@ app.use(express.json())
 const PORT = process.env.PORT;
 
 app.get('/', (req:Request, res:Response)=>{
-    res.send('hello from user service' +
+    res.send('hello from file service' +
         '')
 });
 

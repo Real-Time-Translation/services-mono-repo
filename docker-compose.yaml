@@ -8,3 +8,11 @@ services:
     environment:
       - PORT=80
     restart: "no"
+  file-storage-gateway-service:
+    build: ./fileStorageGatewayService
+    container_name: file-storage-gateway-service
+    ports:
+      - "8081:81"
+    environment:
+      - PORT=81
+    restart: "no"

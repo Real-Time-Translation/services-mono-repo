@@ -12,7 +12,9 @@ services:
     build: ./fileStorageGatewayService
     container_name: file-storage-gateway-service
     ports:
-      - "8081:81"
+      - "8081:80"
     environment:
-      - PORT=81
+      - PORT=80
+      - YSTORAGE_ACCESS_KEY_ID=${YSTORAGE_ACCESS_KEY_ID}
+      - YSTORAGE_SECRET_ACCESS_KEY_ID=${YSTORAGE_SECRET_ACCESS_KEY_ID}
     restart: "no"

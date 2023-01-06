@@ -13,7 +13,6 @@ if (!process.env.YSTORAGE_ACCESS_KEY_ID
 
 /**
  * Gateway to proceed CRUD operations with yandex storage
- * Todo: check aws s3 api and create own version
  * */
 const s3 = new EasyYandexS3({
     auth: {

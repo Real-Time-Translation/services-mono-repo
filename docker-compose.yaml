@@ -1,20 +1,53 @@
 version: '3'
 services:
+  db:
+    image: mongo:4.2.8
+    ports:
+      - "4000:27017"
+    restart: always
+  signaling-service:
+    build: ./signalingService
+    ports:
+      - "8082:8080"
+    environment:
+      - PORT=8080
+      - DB_HOST=mongodb://db:27017
+      - DB_NAME=signaling
+    networks:
+      - app-network
+    restart: "no"
   user-service:
     build: ./userService
-    container_name: user-service
     ports:
-      - "8080:80"
+      - "8081:8080"
     environment:
-      - PORT=80
+      - PORT=8080
+    networks:
+      - app-network
     restart: "no"
-  file-storage-gateway-service:
-    build: ./fileStorageGatewayService
-    container_name: file-storage-gateway-service
+  query-service:
+    build: ./queryService
     ports:
-      - "8081:80"
+      - '8080:8080'
     environment:
-      - PORT=80
-      - YSTORAGE_ACCESS_KEY_ID=${YSTORAGE_ACCESS_KEY_ID}
-      - YSTORAGE_SECRET_ACCESS_KEY_ID=${YSTORAGE_SECRET_ACCESS_KEY_ID}
+      - PORT=8080
+      - USER_SERVICE_HOST=user-service
+      - USER_SERVICE_PORT=8080
+    networks:
+      - app-network
     restart: "no"
+
+networks:
+  app-network:
+    driver: bridge
+
+#  file-storage-gateway-service:
+#    build: ./fileStorageGatewayService
+#    container_name: file-storage-gateway-service
+#    ports:
+#      - "8082:80"
+#    environment:
+#      - PORT=80
+#      - YSTORAGE_ACCESS_KEY_ID=${YSTORAGE_ACCESS_KEY_ID}
+#      - YSTORAGE_SECRET_ACCESS_KEY_ID=${YSTORAGE_SECRET_ACCESS_KEY_ID}
+#    restart: "no"

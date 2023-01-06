@@ -34,5 +34,5 @@ app.get('/user-check', (req:Request, res:Response)=>{
 });
 
 app.listen(PORT,()=> {
-    console.log('Server is running in port:' , PORT)
+    console.log('Query service is running...')
 });

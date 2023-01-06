@@ -6,7 +6,12 @@ services:
       - "4000:27017"
     restart: always
   signaling-service:
-    build: ./signalingService
+    build:
+      context: ./signalingService
+      dockerfile: Dockerfile-dev
+    volumes:
+      - ./signalingService/src:/usr/src/app/src:z
+      - /tmp/signalingService/npm-cache:/root/.npm:z
     ports:
       - "8082:8080"
     environment:
@@ -17,7 +22,12 @@ services:
       - app-network
     restart: "no"
   user-service:
-    build: ./userService
+    build:
+      context: ./userService
+      dockerfile: Dockerfile-dev
+    volumes:
+      - ./userService/src:/usr/src/app/src:z
+      - /tmp/userService/npm-cache:/root/.npm:z
     ports:
       - "8081:8080"
     environment:
@@ -26,7 +36,11 @@ services:
       - app-network
     restart: "no"
   query-service:
-    build: ./queryService
+    build:
+      context: ./queryService
+      dockerfile: Dockerfile-dev
+    volumes:
+      - ./queryService/src:/usr/src/app/src:z
     ports:
       - '8080:8080'
     environment:

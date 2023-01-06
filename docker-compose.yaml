@@ -11,7 +11,6 @@ services:
       dockerfile: Dockerfile-dev
     volumes:
       - ./signalingService/src:/usr/src/app/src:z
-      - /tmp/signalingService/npm-cache:/root/.npm:z
     ports:
       - "8082:8080"
     environment:
@@ -27,7 +26,6 @@ services:
       dockerfile: Dockerfile-dev
     volumes:
       - ./userService/src:/usr/src/app/src:z
-      - /tmp/userService/npm-cache:/root/.npm:z
     ports:
       - "8081:8080"
     environment:

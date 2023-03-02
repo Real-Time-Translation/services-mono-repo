@@ -12,26 +12,25 @@ envGuard()
 const PORT = process.env.PORT;
 const app: Express = express();
 const server: HTTPServer = createServer(app);
-createSocketIO(server)
+createSocketIO(server);
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
 const startServer = (ampqChannel: Channel, db: Db | null) => {
     server.listen(PORT, () => {
-        console.log('Query service is running...')
+        console.log('Query service is running...');
     });
-    listenEvents()
-    ampqChannel.consume('', () => {});
-}
+    listenEvents(ampqChannel)
+};
 
 Promise.all([connectRabbit(), connectToDBServer()]).then((values)=>{
-    const rabbitConnectionResult = values[0]
-    const dbConnectionResult = values[1]
-    startServer(rabbitConnectionResult, dbConnectionResult)
-})
+    const rabbitConnectionResult = values[0];
+    const dbConnectionResult = values[1];
+    startServer(rabbitConnectionResult, dbConnectionResult);
+});
 
 /** Handlers */
 app.get('/', (req: Request, res: Response) => {
-    res.send('hello from query service')
+    res.send('hello from query service').status(200);
 });

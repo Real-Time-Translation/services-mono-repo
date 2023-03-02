@@ -1,3 +1,4 @@
-export enum Events {
-    connection = 'connection'
+export enum EventType {
+    Connect = 'connect',
+    CreateMeeting = 'createMeeting'
 }

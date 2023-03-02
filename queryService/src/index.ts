@@ -1,38 +1,37 @@
 import express, {Express, Request, Response} from 'express'
 import cors from 'cors'
-import dotenv from 'dotenv'
-import axios from "axios";
+import {Channel} from 'amqplib'
+import {createServer, Server as HTTPServer} from 'http';
+import {envGuard} from "./envGuard.js";
+import {connectRabbit} from "./rabbit/connect.js";
+import {connectToDBServer} from "./db/connect.js";
+import {Db} from "mongodb";
+import {createSocketIO, listenEvents} from "./socket/index.js";
 
-if (process.env.NODE_ENV !== 'production'){
-    dotenv.config();
-}
-
-if (!process.env.PORT) {
-    throw new Error('Please, specify port number!')
-}
-
-if (!process.env.USER_SERVICE_HOST) {
-    throw new Error('Please, specify user service host number!')
-}
-
+envGuard()
+const PORT = process.env.PORT;
 const app: Express = express();
+const server: HTTPServer = createServer(app);
+createSocketIO(server)
+
 app.use(cors())
 app.use(express.json())
 
-const PORT = process.env.PORT;
-const USER_SERVICE = `http://${process.env.USER_SERVICE_HOST}:${process.env.USER_SERVICE_PORT}`
-console.log(USER_SERVICE)
-app.get('/', (req:Request, res:Response)=>{
-    res.send('hello from query service' +
-        '')
-});
+const startServer = (ampqChannel: Channel, db: Db | null) => {
+    server.listen(PORT, () => {
+        console.log('Query service is running...')
+    });
+    listenEvents()
+    ampqChannel.consume('', () => {});
+}
 
-app.get('/user-check', (req:Request, res:Response)=>{
-    axios.get(USER_SERVICE).then(()=> {
-        res.send('ok')
-    })
-});
+Promise.all([connectRabbit(), connectToDBServer()]).then((values)=>{
+    const rabbitConnectionResult = values[0]
+    const dbConnectionResult = values[1]
+    startServer(rabbitConnectionResult, dbConnectionResult)
+})
 
-app.listen(PORT,()=> {
-    console.log('Query service is running...')
+/** Handlers */
+app.get('/', (req: Request, res: Response) => {
+    res.send('hello from query service')
 });

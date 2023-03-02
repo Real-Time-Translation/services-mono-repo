@@ -4,7 +4,23 @@ services:
     image: mongo:4.2.8
     ports:
       - "4000:27017"
-    restart: always
+    restart: on-failure
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=test
+      - MONGO_INITDB_ROOT_PASSWORD=test
+
+  rabbit:
+    image: rabbitmq:3.11.6-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+      - "5672"
+      - "15672"
+    networks:
+      - app-network
+    restart: on-failure
+
   signaling-service:
     build:
       context: ./signalingService
@@ -16,10 +32,13 @@ services:
     environment:
       - PORT=8080
       - DB_HOST=mongodb://db:27017
-      - DB_NAME=signaling
+      - DB_NAME=signalingData
     networks:
       - app-network
     restart: "no"
+    depends_on:
+      - rabbit
+
   user-service:
     build:
       context: ./userService
@@ -33,6 +52,10 @@ services:
     networks:
       - app-network
     restart: "no"
+    depends_on:
+      - rabbit
+      - db
+
   query-service:
     build:
       context: ./queryService
@@ -43,11 +66,14 @@ services:
       - '8080:8080'
     environment:
       - PORT=8080
-      - USER_SERVICE_HOST=user-service
-      - USER_SERVICE_PORT=8080
+      - DB_HOST=mongodb://db:27017
+      - DB_NAME=queryData
+      - RABBIT=amqp://guest:guest@rabbit:5672
     networks:
       - app-network
     restart: "no"
+    depends_on:
+      - rabbit
 
 networks:
   app-network:

@@ -1,4 +1,5 @@
 export enum EventType {
     Connect = 'connect',
-    CreateMeeting = 'createMeeting'
+    CreateMeeting = 'createMeeting',
+    MeetingCreated = 'meetingCreated'
 }

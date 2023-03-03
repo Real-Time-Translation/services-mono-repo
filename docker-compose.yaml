@@ -5,9 +5,6 @@ services:
     ports:
       - "4000:27017"
     restart: on-failure
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=test
-      - MONGO_INITDB_ROOT_PASSWORD=test
 
   rabbit:
     image: rabbitmq:3.11.6-management

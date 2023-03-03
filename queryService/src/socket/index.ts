@@ -2,26 +2,22 @@ import {Server as SocketIOServer} from "socket.io";
 import {Server as HTTPServer} from 'http'
 import {EventType} from "./constants.js";
 import {Channel as AMPQChannel} from 'amqplib'
+import {RaabbitQueue} from "../rabbit/connect.js";
 
-let io: SocketIOServer
-
-export const createSocketIO = (httpServer: HTTPServer
-) => {
-    io = new SocketIOServer(httpServer, {
+export const createSocketIO = (httpServer: HTTPServer) : SocketIOServer => {
+    return new SocketIOServer(httpServer, {
         cors: {
             origin: '*',
         }
     });
 }
 
-export const listenEvents = (ampqChannel: AMPQChannel) => {
+/** Listening events from client */
+export const listenEvents = (io: SocketIOServer, ampqChannel: AMPQChannel) => {
     io.on(EventType.Connect, (socket) => {
-        console.log('connected')
-
         socket.on(EventType.CreateMeeting, () => {
-            /** Send event to rabbit */
-            const jsonMsg = JSON.stringify({})
-            ampqChannel.publish("", "CreateMeetingQueue", Buffer.from(jsonMsg))
+            const jsonMsg = JSON.stringify({clientSocketId: socket.id})
+            ampqChannel.publish("", RaabbitQueue.OnCreateMeetingRequestQueue, Buffer.from(jsonMsg))
         })
 
     })

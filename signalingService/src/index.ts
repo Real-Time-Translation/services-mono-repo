@@ -3,10 +3,10 @@ import cors from 'cors'
 import {Channel, ConsumeMessage} from 'amqplib'
 import {createServer, Server as HTTPServer} from 'http';
 import {envGuard} from "./envGuard.js";
-import {connectRabbit} from "./rabbit/connect.js";
+import {connectRabbit, RaabbitQueue} from "./rabbit/connect.js";
 import {connectToDBServer} from "./db/connect.js";
 import {Db} from "mongodb";
-import {meetingQueueConsumer} from "./rabbit/consumers/meetingQueueConsumer.js";
+import {onMeetingRequestQueueConsumer} from "./rabbit/consumers/onMeetingRequestQueueConsumer.js";
 
 envGuard()
 const PORT = process.env.PORT;
@@ -21,8 +21,9 @@ const startServer = (ampqChannel: Channel, db: Db) => {
         console.log('Signalling service is running...');
     });
 
-    ampqChannel.consume("CreateMeetingQueue",
-        (message: ConsumeMessage | null) => meetingQueueConsumer(message, db));
+    ampqChannel.consume(RaabbitQueue.OnCreateMeetingRequestQueue,
+        (message: ConsumeMessage | null) =>
+            onMeetingRequestQueueConsumer(message, db, ampqChannel));
 
 };
 

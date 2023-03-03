@@ -1,25 +1,33 @@
-import express, {Express, Request, Response} from 'express'
+import express, {Express} from 'express'
 import cors from 'cors'
-import dotenv from 'dotenv'
+import {Channel, ConsumeMessage} from 'amqplib'
+import {createServer, Server as HTTPServer} from 'http';
+import {envGuard} from "./envGuard.js";
+import {connectRabbit} from "./rabbit/connect.js";
+import {connectToDBServer} from "./db/connect.js";
+import {Db} from "mongodb";
+import {meetingQueueConsumer} from "./rabbit/consumers/meetingQueueConsumer.js";
 
-if (process.env.NODE_ENV !== 'production'){
-    dotenv.config();
-}
-
-if (!process.env.PORT) {
-    throw new Error('Please, specify port number!')
-}
-
-const app: Express = express();
-app.use(cors())
-app.use(express.json())
-
+envGuard()
 const PORT = process.env.PORT;
+const app: Express = express();
+const server: HTTPServer = createServer(app);
 
-app.get('/', (req:Request, res:Response)=>{
-    res.send('hello from signalling service')
-});
+app.use(cors());
+app.use(express.json());
 
-app.listen(PORT,()=> {
-    console.log('Signalling service is running...')
+const startServer = (ampqChannel: Channel, db: Db) => {
+    server.listen(PORT, () => {
+        console.log('Signalling service is running...');
+    });
+
+    ampqChannel.consume("CreateMeetingQueue",
+        (message: ConsumeMessage | null) => meetingQueueConsumer(message, db));
+
+};
+
+Promise.all([connectRabbit(), connectToDBServer()]).then((values)=>{
+    const rabbitConnectionResult = values[0];
+    const dbConnectionResult = values[1] as Db;
+    startServer(rabbitConnectionResult, dbConnectionResult);
 });

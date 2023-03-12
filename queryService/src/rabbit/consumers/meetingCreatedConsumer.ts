@@ -10,5 +10,4 @@ export const meetingCreatedConsumer = (message: ConsumeMessage | null, ampqChann
         const createdMeetingId = contentParsed?.meetingId
         socketIOServer.to(clientSocketIdToNotify).emit(EventType.MeetingCreated, createdMeetingId)
     }
-
 }

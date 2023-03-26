@@ -22,4 +22,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-            docker build -t "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/my-image:${{ github.sha }}" -f "/services/queryService/Dockerfile-prod"
+            docker build -t "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/my-image:${{ github.sha }}" -f "/services/queryService/Dockerfile-prod" /services/queryService/

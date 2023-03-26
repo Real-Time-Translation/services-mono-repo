@@ -4,6 +4,7 @@ on:
 
 env:
   YCR_SERVER: cr.yandex
+  YCR_REGISTRY_ID: ${{ secrets.YCR_REGISTRY_ID }}
   YCR_USERNAME: oauth
   YCR_PASSWORD: ${{ secrets.YCR_PASSWORD }}
 
@@ -17,4 +18,9 @@ jobs:
         
       - name: Login to Yandex Container Registry
         run: |
-          echo "${{ env.YCR_PASSWORD }}" | tr -d '\n' | docker login -u "${{ env.YCR_USERNAME }}" --password-stdin "${{ env.YCR_SERVER }}"      
+          echo "${{ env.YCR_PASSWORD }}" | tr -d '\n' | docker login -u "${{ env.YCR_USERNAME }}" --password-stdin "${{ env.YCR_SERVER }}"
+
+      - name: Build Docker image
+
+        run: |
+            docker build -t "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/my-image:${{ github.sha }}" .

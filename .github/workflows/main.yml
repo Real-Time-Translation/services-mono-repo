@@ -20,7 +20,12 @@ jobs:
         run: |
           echo "${{ env.YCR_PASSWORD }}" | tr -d '\n' | docker login -u "${{ env.YCR_USERNAME }}" --password-stdin "${{ env.YCR_SERVER }}"
 
-      - name: Build Docker image
+      - name: Build Query Service Docker image
         working-directory: ./services/queryService
         run: |
-            docker build -t "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/my-image:${{ github.sha }}" -f "Dockerfile-prod" .
+            docker build -t "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/query-service:${{ github.sha }}" -f "Dockerfile-prod" .
+
+      - name: Build Signalling Service Docker image
+        working-directory: ./services/queryService
+        run: |
+          docker build -t "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/signalling-service:${{ github.sha }}" -f "Dockerfile-prod" .

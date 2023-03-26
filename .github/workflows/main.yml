@@ -1,0 +1,19 @@
+on: 
+  push:
+    branches: ["master"]
+
+env:
+  YCR_USERNAME: oauth
+  YCR_PASSWORD: ${{ secrets.YCR_PASSWORD }}
+
+jobs:
+
+  push-to-registry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Login to Yandex Container Registry
+        run: docker login -u "${{ env.YCR_USERNAME }}" --password "${{ env.YCR_PASSWORD }}" cr.yandex
+      

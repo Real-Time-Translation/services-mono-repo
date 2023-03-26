@@ -40,5 +40,5 @@ Promise.all([connectRabbit(), connectToDBServer()]).then((values)=>{
 
 /** Handlers */
 app.get('/', (req: Request, res: Response) => {
-    res.send('hello from query service').status(200);
+    res.send('hello from query service 1').status(200);
 });

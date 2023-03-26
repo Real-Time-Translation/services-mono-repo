@@ -15,5 +15,5 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Login to Yandex Container Registry
-        run: docker login --u "${{ env.YCR_USERNAME }}" --password-stdin "${{ env.YCR_PASSWORD }}" cr.yandex
+        run: docker login --username "${{ env.YCR_USERNAME }}" --password-stdin "${{ env.YCR_PASSWORD }}" cr.yandex
       

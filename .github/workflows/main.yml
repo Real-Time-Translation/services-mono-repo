@@ -24,8 +24,14 @@ jobs:
         working-directory: ./services/queryService
         run: |
             docker build -t "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/query-service:${{ github.sha }}" -f "Dockerfile-prod" .
+      - name: Push Query Service image to Yandex Container Registry
+        run: |
+          docker push "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/query-service:${{ github.sha }}"
 
       - name: Build Signalling Service Docker image
-        working-directory: ./services/queryService
+        working-directory: ./services/signalingService
         run: |
           docker build -t "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/signalling-service:${{ github.sha }}" -f "Dockerfile-prod" .
+      - name: Push Query Service image to Yandex Container Registry
+        run: |
+          docker push "${{ env.YCR_SERVER }}/${{ env.YCR_REGISTRY_ID }}/signalling-service:${{ github.sha }}"

@@ -1,41 +1,39 @@
 import express, {Express, Request, Response} from 'express'
 import cors from 'cors'
-import {Channel, ConsumeMessage} from 'amqplib'
+import {ConsumeMessage} from 'amqplib'
 import {createServer, Server as HTTPServer} from 'http';
 import {envGuard} from "./envGuard.js";
-import {connectRabbit, RaabbitQueue} from "./rabbit/connect.js";
+import {connectRabbit, RaabbitQueue, rabbitMQChannel} from "./rabbit/connect.js";
 import {connectToDBServer} from "./db/connect.js";
-import {Db} from "mongodb";
 import {createSocketIO, listenEvents as listenClientEvents} from "./socket/index.js";
-import {meetingCreatedConsumer} from "./rabbit/consumers/meetingCreatedConsumer.js";
+import {meetingEventConsumer} from "./rabbit/consumers/index.js";
 
 envGuard()
 const PORT = process.env.PORT;
 const app: Express = express();
 const server: HTTPServer = createServer(app);
-const socketIO = createSocketIO(server);
+export const socketIO = createSocketIO(server);
 
 app.use(cors());
 app.use(express.json());
 
-const startServer = (ampqChannel: Channel, db: Db | null) => {
+const startServer = () => {
     server.listen(PORT, () => {
         console.log('Query service is running...');
     });
 
-    /** Отслеживание создания комнаты */
-    ampqChannel.consume(RaabbitQueue.MeetingCreatedQueue,
-        (message: ConsumeMessage | null)  =>
-            meetingCreatedConsumer(message, ampqChannel, socketIO));
-
-    listenClientEvents(socketIO, ampqChannel)
+    rabbitMQChannel?.channel?.consume(RaabbitQueue.MeetingEventAware,
+        (message: ConsumeMessage | null) =>
+            meetingEventConsumer(message)
+    )
+    listenClientEvents()
 };
 
-
-Promise.all([connectRabbit(), connectToDBServer()]).then((values)=>{
-    const rabbitConnectionResult = values[0];
+Promise.all([connectRabbit(), connectToDBServer()]).then((values) => {
     const dbConnectionResult = values[1];
-    startServer(rabbitConnectionResult, dbConnectionResult);
+    console.log('connected to db', dbConnectionResult.databaseName)
+    console.log('connected to rabbitmq')
+    startServer();
 });
 
 /** Handlers */

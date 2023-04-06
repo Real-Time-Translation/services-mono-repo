@@ -3,8 +3,10 @@ services:
   db:
     image: mongo:4.2.8
     ports:
-      - "4000:27017"
+      - "27017:27017"
     restart: on-failure
+    networks:
+      - app-network
 
   rabbit:
     image: rabbitmq:3.11.6-management

@@ -3,8 +3,10 @@ services:
   db:
     image: mongo:4.2.8
     ports:
-      - "4000:27017"
+      - "27017:27017"
     restart: on-failure
+    networks:
+      - app-network
 
   rabbit:
     image: rabbitmq:3.11.6-management
@@ -26,7 +28,7 @@ services:
   signaling-service:
     image: cr.yandex/crplh29k6e12da83i0ac/signalling-service:latest
     ports:
-      - "8081:8080"
+      - "81:8080"
     environment:
       - PORT=8080
       - DB_HOST=mongodb://db:27017
@@ -41,7 +43,7 @@ services:
   query-service:
     image: cr.yandex/crplh29k6e12da83i0ac/query-service:latest
     ports:
-      - '8080:8080'
+      - '80:8080'
     environment:
       - PORT=8080
       - DB_HOST=mongodb://db:27017

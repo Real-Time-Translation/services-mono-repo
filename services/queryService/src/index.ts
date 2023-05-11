@@ -12,10 +12,13 @@ import fetch from "node-fetch";
 
 envGuard()
 const PORT = process.env.PORT;
+
+/** Initializing core servers */
 const app: Express = express();
 const server: HTTPServer = createServer(app);
 export const socketIO = createSocketIO(server);
 
+/** Set middlewares */
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -33,6 +36,7 @@ const startServer = () => {
     listenClientEvents()
 };
 
+/** Perform nessesary connections to DB and Message Broker*/
 Promise.all([connectRabbit(), connectToDBServer()]).then((values) => {
     const dbConnectionResult = values[1];
     console.log('connected to db', dbConnectionResult.databaseName)
@@ -45,14 +49,16 @@ app.get('/', (req: Request, res: Response) => {
     res.send('hello from query service 1').status(200);
 });
 
+/** Testing translation to redirect to Yandex Translate API */
 app.post('/translate', (req: Request, res: Response) => {
+    console.log(req.body)
     const textToTranslate = req.body.text
     fetch('https://translate.api.cloud.yandex.net/translate/v2/translate',
         {method: 'POST',
             headers: {
                 "Content-Type": "application/json",
                 Authorization:
-                    'Bearer t1.9euelZqNz8fHjcuJzpaRipeVm5bOj-3rnpWak4nKmZGVx5eNnJGVlIyeiZvl8_drZVld-e9bWHE5_N3z9ysUV13571tYcTn8.zGr8sk9pEQncau_jcfl7lckmu1uFNaJNJGRHsvt55L66kao6bg-SHeQPw9dFVqbV2MHf2_UYn7rKuiX6PS40Cg',
+                    'Bearer t1.9euelZrJjovGyIqOxsabk4rOm52Jmu3rnpWak4nKmZGVx5eNnJGVlIyeiZvl8_cKVQtd-e8cbSNO_N3z90oDCV357xxtI078.36X1pKULuAzt3hdqeo8WhgAeIcaTkl6LjnZlrmfFERMGKehXOEDkEasq3Y35WTUQRP5iVtw7UMKPHo4m9RVfCg',
             },
             body: JSON.stringify({
                 "folderId": "b1gq2t56gg8ujf82elrj",
@@ -65,8 +71,13 @@ app.post('/translate', (req: Request, res: Response) => {
         }
     ).then((resultFromAPI: any) => {
         resultFromAPI.json().then((parsedData: any) => {
-            const translatedText = parsedData.translations[0].text
-            res.send(translatedText).status(200);
+            try {
+                const translatedText = parsedData.translations[0].text
+                res.send(translatedText).status(200);
+            }
+            catch (e){
+                res.send('error in Yandex Translate API').status(500);
+            }
         })
     })
 })

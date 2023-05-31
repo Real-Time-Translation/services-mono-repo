@@ -21,7 +21,7 @@ export const socketIO = createSocketIO(server);
 /** Set middlewares */
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 
 const startServer = () => {
@@ -51,19 +51,21 @@ app.get('/', (req: Request, res: Response) => {
 
 /** Testing translation to redirect to Yandex Translate API */
 app.post('/translate', (req: Request, res: Response) => {
-    console.log(req.body)
     const textToTranslate = req.body.text
+    const sourceLanguage = req.body.sourceLanguage
+    const currentLanguage = req.body.currentLanguage
     fetch('https://translate.api.cloud.yandex.net/translate/v2/translate',
-        {method: 'POST',
+        {
+            method: 'POST',
             headers: {
                 "Content-Type": "application/json",
                 Authorization:
-                    'Bearer t1.9euelZrKnsucj5jKzYycj5CZlpiKju3rnpWak4nKmZGVx5eNnJGVlIyeiZvl8_dOe3Jc-e8SdTIu_N3z9w4qcFz57xJ1Mi78.aSxxcLg1kGqtzNVmy5ll4jnIHSmCSKusTJWBTYvL9UxG-hM5x86dEoRbpoAktVG8zt-wUqLrCzzGFsJ1ffFZDA',
+                    'Bearer t1.9euelZrNj42Om8nLnpmQzcnPy8qNne3rnpWak4nKmZGVx5eNnJGVlIyeiZvl8_c4HiFc-e8DAhxx_N3z93hMHlz57wMCHHH8.q8hcqWW1QN2Cqc6llJ18NSRp2T8wXfIz0XkkzIbbsZpeBs6CoymI-Zw0D0knSZ1OUjv9EZXfnxYXs2e7bGOaCw',
             },
             body: JSON.stringify({
                 "folderId": "b1gq2t56gg8ujf82elrj",
-                "sourceLanguageCode": "ru",
-                "targetLanguageCode": "en",
+                "sourceLanguageCode": sourceLanguage,
+                "targetLanguageCode": currentLanguage,
                 "texts": [
                     textToTranslate
                 ]
@@ -74,8 +76,7 @@ app.post('/translate', (req: Request, res: Response) => {
             try {
                 const translatedText = parsedData.translations[0].text
                 res.send(translatedText).status(200);
-            }
-            catch (e){
+            } catch (e) {
                 res.send('error in Yandex Translate API').status(500);
             }
         })

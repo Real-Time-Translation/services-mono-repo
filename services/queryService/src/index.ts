@@ -60,7 +60,7 @@ app.post('/translate', (req: Request, res: Response) => {
             headers: {
                 "Content-Type": "application/json",
                 Authorization:
-                    'Bearer t1.9euelZqcnpeKjZyXlp6azM6Ulcqdnu3rnpWak4nKmZGVx5eNnJGVlIyeiZvl8_cmBHpb-e8YIGNS_N3z92Yyd1v57xggY1L8zef1656VmpiUmoyczZ2UyMmMlYqempeK7_zF656VmpiUmoyczZ2UyMmMlYqempeK.Fj4zH6pKfMKmfBzbZmfR6Mey-_V6IIJR80ZBdjoFgVfdXAsrT2ozVAEbgnurOWKv4OSxZ00qQU_P0AFrkZs0Bg',
+                    'Bearer t1.9euelZrGi87Imp6Nx46WipvGzZeWne3rnpWak4nKmZGVx5eNnJGVlIyeiZvl8_cJbnRb-e82aVF7_N3z90kcclv57zZpUXv8zef1656Vmp2Jy83Ijc-Vko-alpaPj5GV7_zF656Vmp2Jy83Ijc-Vko-alpaPj5GV.eU8c1ZYXg7f_IDAeLd5dzU70dclIDJ1GmTjKMxHKJ5cGJnZP0dvyfMJMpZF4jZHOi0qqMoKUE6NEugRU9GcwCg',
             },
             body: JSON.stringify({
                 "folderId": "b1gq2t56gg8ujf82elrj",
